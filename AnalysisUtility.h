@@ -48,7 +48,7 @@ uCalculateRate
 
     for(auto it=fInputCountsPeriods.begin(); it!=fInputCountsPeriods.end(); ){
 
-        if((((*it).first)/((*it).second)-rate)>3*rms){
+        if(TMath::Abs((((*it).first)/((*it).second)-rate))>3*rms){
             it=fInputCountsPeriods.erase(it);
         } else {
             ++it;

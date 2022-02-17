@@ -1,3 +1,4 @@
+#include"AnalysisUtility.h"
 
 void
 readTree
@@ -25,36 +26,48 @@ readTree
     hScan_Off->GetXaxis()->SetTitle("position (mm)");
     hScan_Off->GetYaxis()->SetTitle("rate (Hz)");
     //
-    TH1F*   hScan_On_  = new TH1F( "hScan_On_", "hScan_On_", 51, -5, +5 );
-    hScan_On_->GetXaxis()->SetTitle("position (mm)");
-    hScan_On_->GetYaxis()->SetTitle("rate (Hz)");
+    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 51, -5, +5 );
+    hScan_On->GetXaxis()->SetTitle("position (mm)");
+    hScan_On->GetYaxis()->SetTitle("rate (Hz)");
     //
     TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 51, -5, +5 );
     hScan_Dif->GetXaxis()->SetTitle("position (mm)");
     hScan_Dif->GetYaxis()->SetTitle("rate (Hz)");
     //
-    for ( Int_t iMes = 0; iMes < tInputData->GetEntries(); iMes++ )    {
+    std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_off;
+    std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_on;
+    std::vector<Float_t> positions;
+    Float_t current_position=-9999;
+    for ( Int_t iMes = 0; iMes < tInputData->GetEntries(); iMes++) {
         tInputData->GetEvent(iMes);
-        auto kCurrent_Bin = hScan_Off->GetXaxis()->FindBin( position/800. );
-        hScan_Off->SetBinContent   ( kCurrent_Bin, counts_off/period_off );
-        hScan_Off->SetBinError     ( kCurrent_Bin, sqrt( counts_off )/period_off  );
-        hScan_On_->SetBinContent   ( kCurrent_Bin, counts_on/period_on );
-        hScan_On_->SetBinError     ( kCurrent_Bin, sqrt( counts_on )/period_on  );
-        hScan_Dif->SetBinContent   ( kCurrent_Bin, (counts_on/period_on) - (counts_off/period_off) );
-        hScan_Dif->SetBinError     ( kCurrent_Bin, sqrt( counts_off/(period_off*period_off) + counts_on/(period_on*period_on) )  );
+        float pos = position / 800.;
+        if (current_position != pos) {
+            current_position = pos;
+            positions.push_back(current_position);
+        }
+        map_off[current_position].push_back({counts_off, period_off});
+        map_on[current_position].push_back({counts_on, period_on});
+
+        auto kRateOff = uCalculateRate(map_off[current_position]);
+        auto kRateOn = uCalculateRate(map_on[current_position]);
+
+        auto kCurrent_Bin = hScan_Off->GetXaxis()->FindBin(pos);
+        hScan_Off->SetBinContent(kCurrent_Bin, kRateOff.first);
+        hScan_Off->SetBinError(kCurrent_Bin, kRateOff.second);
+        hScan_On->SetBinContent(kCurrent_Bin, kRateOn.first);
+        hScan_On->SetBinError(kCurrent_Bin, kRateOn.second);
+        hScan_Dif->SetBinContent(kCurrent_Bin, kRateOn.first - kRateOff.first);
+        hScan_Dif->SetBinError(kCurrent_Bin, sqrt(kRateOff.second * kRateOff.second + kRateOn.second * kRateOn.second));
     }
-    /*PROVA
-    TCanvas* c1=new TCanvas();
-    hScan_Off->Draw();
-    TCanvas* c2=new TCanvas();
-    hScan_On_->Draw();
-    TCanvas* c3=new TCanvas();
-    hScan_Dif->Draw();
-    */
+
     TFile*  fOutputFile  =   new TFile( fFileName + TString(".out.root"), "RECREATE" );
     //
+    hScan_On->Write();
+    hScan_Off->Write();
     hScan_Dif->Write();
     //
+
     fOutputFile->Close();
+
     fInputFile->Close();
 }

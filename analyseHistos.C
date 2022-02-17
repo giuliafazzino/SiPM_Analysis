@@ -6,6 +6,8 @@ analyseHistos
         cout << " NO FILENAME AAAAHHHHH "  << endl;
     }
     //
+     gStyle->SetOptFit(1011);
+    //
     TFile*  fInputFileX =   new TFile( fFileNameX );
     TFile*  fInputFileY =   new TFile( fFileNameY );
     //
@@ -21,7 +23,7 @@ analyseHistos
     gROOT->SetBatch();
     TCanvas*    cDrawCompare = new TCanvas();
     hXScan_Dif->Draw();
-    hYScan_Dif->SetLineColor(kRed);
+    hYScan_Dif->SetLineColor(8);
     hYScan_Dif->Draw("same");
     cDrawCompare->SaveAs("cDrawCompare.pdf");
     cDrawCompare->SaveAs("cDrawCompare.root");
@@ -51,6 +53,7 @@ analyseHistos
     hXScan_Dif->Write();
 	hYScan_Dif->Write();
     //
+
     fOutputFile->Close();
     fInputFileY->Close();
     fInputFileX->Close();
