@@ -35,4 +35,5 @@
 .idea
 *.DS_Store
 *.pdf
+*.png
 *.root
