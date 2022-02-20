@@ -28,7 +28,7 @@ void readTreeTreshold(TString fFileName = ""){
     hScan_Off->GetXaxis()->SetTitle("Threshold");
     hScan_Off->GetYaxis()->SetTitle("Rate (Hz)");
 
-    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif (1000mV)", 64, 0, 63);
+    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif ", 64, 0, 63);
     hScan_Dif->GetXaxis()->SetTitle("Threshold");
     hScan_Dif->GetYaxis()->SetTitle("Rate (Hz)");
 
@@ -48,6 +48,13 @@ void readTreeTreshold(TString fFileName = ""){
 
     }
     fillHist(hScan_On, hScan_Off, hScan_Dif, map_on, map_off, thresholds);
+
+    hScan_Off->Fit("pol0", "","", 10, 30);
+    hScan_Off->Fit("pol0", "","", 40, 60);
+    hScan_On->Fit("pol0", "","", 10, 30);
+    hScan_On->Fit("pol0", "","", 40, 60);
+    hScan_Dif->Fit("pol0", "","", 10, 30);
+    hScan_Dif->Fit("pol0", "","", 40, 60);
 
     TFile*  fOutputFile  =   new TFile( fFileName + TString(".out.root"), "RECREATE" );
     hScan_On->Write();
