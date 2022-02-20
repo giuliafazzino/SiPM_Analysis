@@ -1,4 +1,5 @@
 #include"AnalysisUtility.h"
+#include "Histograms.h"
 
 void
 readTree
@@ -22,13 +23,13 @@ readTree
     tInputData->SetBranchAddress( "period_on", &period_on );
     tInputData->SetBranchAddress( "period_off", &period_off );
     //
-    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 51, -5, +5 );
-    hScan_Off->GetXaxis()->SetTitle("position (mm)");
-    hScan_Off->GetYaxis()->SetTitle("rate (Hz)");
-    //
     TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 51, -5, +5 );
     hScan_On->GetXaxis()->SetTitle("position (mm)");
     hScan_On->GetYaxis()->SetTitle("rate (Hz)");
+    //
+    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 51, -5, +5 );
+    hScan_Off->GetXaxis()->SetTitle("position (mm)");
+    hScan_Off->GetYaxis()->SetTitle("rate (Hz)");
     //
     TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 51, -5, +5 );
     hScan_Dif->GetXaxis()->SetTitle("position (mm)");
@@ -47,18 +48,8 @@ readTree
         }
         map_off[current_position].push_back({counts_off, period_off});
         map_on[current_position].push_back({counts_on, period_on});
-
-        auto kRateOff = uCalculateRate(map_off[current_position]);
-        auto kRateOn = uCalculateRate(map_on[current_position]);
-
-        auto kCurrent_Bin = hScan_Off->GetXaxis()->FindBin(pos);
-        hScan_Off->SetBinContent(kCurrent_Bin, kRateOff.first);
-        hScan_Off->SetBinError(kCurrent_Bin, kRateOff.second);
-        hScan_On->SetBinContent(kCurrent_Bin, kRateOn.first);
-        hScan_On->SetBinError(kCurrent_Bin, kRateOn.second);
-        hScan_Dif->SetBinContent(kCurrent_Bin, kRateOn.first - kRateOff.first);
-        hScan_Dif->SetBinError(kCurrent_Bin, sqrt(kRateOff.second * kRateOff.second + kRateOn.second * kRateOn.second));
     }
+    fillHist(hScan_On, hScan_Off, hScan_Dif, map_on, map_off, positions);
 
     TFile*  fOutputFile  =   new TFile( fFileName + TString(".out.root"), "RECREATE" );
     //

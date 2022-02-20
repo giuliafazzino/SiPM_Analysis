@@ -1,7 +1,7 @@
 #include "AnalysisUtility.h"
 #include "Histograms.h"
 
-void readTree_Vol(TString fFileName = ""){
+void readTreeTreshold(TString fFileName = ""){
 
     if (fFileName == "") {
         cout <<"NO FILENAME" <<endl;
@@ -10,7 +10,8 @@ void readTree_Vol(TString fFileName = ""){
     TFile* fInputFile = new TFile(fFileName);
     TTree* tInputData = (TTree*)(fInputFile->Get("tree"));
 
-    Float_t voltage, counts_on, counts_off, period_on, period_off, rate_on, rate_off;
+    Float_t threshold, voltage, counts_on, counts_off, period_on, period_off, rate_on, rate_off;
+    tInputData->SetBranchAddress("threshold", &threshold);
     tInputData->SetBranchAddress("pulse_voltage", &voltage);
     tInputData->SetBranchAddress("counts_on", &counts_on);
     tInputData->SetBranchAddress("counts_off", &counts_off);
@@ -19,34 +20,34 @@ void readTree_Vol(TString fFileName = ""){
     tInputData->SetBranchAddress("rate_on", &rate_on);
     tInputData->SetBranchAddress("rate_off", &rate_off);
 
-    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 15, 937.5, 1012.5);
-    hScan_On->GetXaxis()->SetTitle("Voltage (mV)");
+    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 64, 0, 63);
+    hScan_On->GetXaxis()->SetTitle("Threshold");
     hScan_On->GetYaxis()->SetTitle("Rate (Hz)");
 
-    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 15, 937.5, 1012.5);
-    hScan_Off->GetXaxis()->SetTitle("Voltage (mV)");
+    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 64, 0, 63);
+    hScan_Off->GetXaxis()->SetTitle("Threshold");
     hScan_Off->GetYaxis()->SetTitle("Rate (Hz)");
 
-    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 15, 937.5, 1012.5);
-    hScan_Dif->GetXaxis()->SetTitle("Voltage (mV)");
+    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif (1000mV)", 64, 0, 63);
+    hScan_Dif->GetXaxis()->SetTitle("Threshold");
     hScan_Dif->GetYaxis()->SetTitle("Rate (Hz)");
 
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_on;
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_off;
-    std::vector<Float_t> voltages;
-    Float_t current_voltage=-9999;
+    std::vector<Float_t> thresholds;
+    Float_t current_thres=-9999;
 
     for(int j=0; j!=tInputData->GetEntries(); ++j) {
         tInputData->GetEvent(j);
-        if (current_voltage != voltage) {
-            current_voltage = voltage;
-            voltages.push_back(current_voltage);
+        if (current_thres != threshold) {
+            current_thres = threshold;
+            thresholds.push_back(current_thres);
         }
-        map_on[current_voltage].push_back({counts_on, period_on});
-        map_off[current_voltage].push_back({counts_off, period_off});
+        map_on[current_thres].push_back({counts_on, period_on});
+        map_off[current_thres].push_back({counts_off, period_off});
 
     }
-    fillHist(hScan_On, hScan_Off, hScan_Dif, map_on, map_off, voltages);
+    fillHist(hScan_On, hScan_Off, hScan_Dif, map_on, map_off, thresholds);
 
     TFile*  fOutputFile  =   new TFile( fFileName + TString(".out.root"), "RECREATE" );
     hScan_On->Write();
