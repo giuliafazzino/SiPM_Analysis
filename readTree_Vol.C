@@ -21,15 +21,15 @@ void readTree_Vol(TString fFileName = ""){
 
     TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 15, 937.5, 1012.5);
     hScan_On->GetXaxis()->SetTitle("Voltage (mV)");
-    hScan_On->GetYaxis()->SetTitle("Rate (Hz)");
+    hScan_On->GetYaxis()->SetTitle("Rate / 100 kHz");
 
     TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 15, 937.5, 1012.5);
     hScan_Off->GetXaxis()->SetTitle("Voltage (mV)");
-    hScan_Off->GetYaxis()->SetTitle("Rate (Hz)");
+    hScan_Off->GetYaxis()->SetTitle("Rate / 100 kHz");
 
     TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 15, 937.5, 1012.5);
     hScan_Dif->GetXaxis()->SetTitle("Voltage (mV)");
-    hScan_Dif->GetYaxis()->SetTitle("Rate (Hz)");
+    hScan_Dif->GetYaxis()->SetTitle("Rate / 100 kHz");
 
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_on;
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_off;

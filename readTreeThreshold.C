@@ -22,15 +22,15 @@ void readTreeTreshold(TString fFileName = ""){
 
     TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 64, 0, 63);
     hScan_On->GetXaxis()->SetTitle("Threshold");
-    hScan_On->GetYaxis()->SetTitle("Rate (Hz)");
+    hScan_On->GetYaxis()->SetTitle("Rate / 100 kHz");
 
     TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 64, 0, 63);
     hScan_Off->GetXaxis()->SetTitle("Threshold");
-    hScan_Off->GetYaxis()->SetTitle("Rate (Hz)");
+    hScan_Off->GetYaxis()->SetTitle("Rate / 100 kHz");
 
     TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif ", 64, 0, 63);
     hScan_Dif->GetXaxis()->SetTitle("Threshold");
-    hScan_Dif->GetYaxis()->SetTitle("Rate (Hz)");
+    hScan_Dif->GetYaxis()->SetTitle("Rate / 100 kHz");
 
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_on;
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_off;
