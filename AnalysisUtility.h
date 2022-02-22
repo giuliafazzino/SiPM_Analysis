@@ -50,7 +50,6 @@ uCalculateRate
             ++it;
         }
     }
-
     return calculatemean(fInputCountsPeriods);
 }
 
