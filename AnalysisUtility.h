@@ -6,7 +6,6 @@
 #include <string_view>
 #include <vector>
 
-
 std::pair<Float_t,Float_t>
 calculatemean(std::vector<std::pair<Float_t,Float_t>> fInputCountsPeriods) {
     std::pair<Float_t,Float_t> fResult;
@@ -29,7 +28,6 @@ calculaterms(std::vector<std::pair<Float_t,Float_t>> fInputCountsPeriods, Float_
     for (auto kCurrentPair : fInputCountsPeriods) {
         rms+=pow(((kCurrentPair.first/kCurrentPair.second)-rate),2);
     }
-
     rms = sqrt(rms);
     rms /=((float)fInputCountsPeriods.size());
     return rms;

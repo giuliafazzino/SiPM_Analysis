@@ -42,12 +42,10 @@ void stability(TString fFileName = ""){
     gTStampDif->GetXaxis()->SetTitle("Timestamp");
     gTStampDif->GetYaxis()->SetTitle("Rate on - off / 100kHz");
 
-
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> tmap_on;
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> tmap_off;
     std::vector<Float_t> temps;
     bool is_same;
-
     for(int j=0; j!=tInputData->GetEntries(); ++j) {
         tInputData->GetEvent(j);
         is_same = false;
@@ -80,44 +78,45 @@ void stability(TString fFileName = ""){
 
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> tsmap_on;
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> tsmap_off;
-    std::vector<Float_t> temps;
-    bool is_same;
+    std::vector<Float_t> tstamps;
 
     for(int j=0; j!=tInputData->GetEntries(); ++j) {
         tInputData->GetEvent(j);
         is_same = false;
-        for(int i=0; i!=temps.size(); ++i) {
-            if (temp_on == temps[i]){
+        for(int i=0; i!=tstamps.size(); ++i) {
+            if (tstamp_on == tstamps[i]){
                 is_same = true;
             }
         }
         if (!is_same) {
-            temps.push_back(temp_on);
+            tstamps.push_back(tstamp_on);
         }
-        tmap_on[temp_on].push_back({(float) counts_on, period_on});
-        tmap_off[temp_on].push_back({(float) counts_off, period_off});
+        tsmap_on[tstamp_on].push_back({(float) counts_on, period_on});
+        tsmap_off[tstamp_on].push_back({(float) counts_off, period_off});
     }
 
-    std::sort(temps.begin(), temps.end());
-    for (auto kCurrentTemp : temps) {
-        auto kRateOff = uCalculateRate(tmap_off[kCurrentTemp]);
-        auto kRateOn = uCalculateRate(tmap_on[kCurrentTemp]);
+    std::sort(tstamps.begin(), tstamps.end());
+    for (auto kCurrentTime : tstamps) {
+        auto kRateOff = uCalculateRate(tsmap_off[kCurrentTime]);
+        auto kRateOn = uCalculateRate(tsmap_on[kCurrentTime]);
 
-        auto npt = gTempOn->GetN();
-        gTempOn->SetPoint(npt, kCurrentTemp, kRateOn.first/1E5);
-        gTempOn->SetPointError(npt, kCurrentTemp, kRateOn.second/1E5);
-        gTempOff->SetPoint(npt, kCurrentTemp, kRateOff.first/1E5);
-        gTempOff->SetPointError(npt, kCurrentTemp, kRateOff.second/1E5);
-        gTempDif->SetPoint(npt, kCurrentTemp, kRateOn.first/1E5 - kRateOff.first/1E5);
-        gTempDif->SetPointError(npt, kCurrentTemp,sqrt(kRateOff.second/1E5 * kRateOff.second/1E5 +
+        auto npt = gTStampOn->GetN();
+        gTStampOn->SetPoint(npt, kCurrentTime, kRateOn.first/1E5);
+        gTStampOn->SetPointError(npt, kCurrentTime, kRateOn.second/1E5);
+        gTStampOff->SetPoint(npt, kCurrentTime, kRateOff.first/1E5);
+        gTStampOff->SetPointError(npt, kCurrentTime, kRateOff.second/1E5);
+        gTStampDif->SetPoint(npt, kCurrentTime, kRateOn.first/1E5 - kRateOff.first/1E5);
+        gTStampDif->SetPointError(npt, kCurrentTime,sqrt(kRateOff.second/1E5 * kRateOff.second/1E5 +
                                                        kRateOn.second/1E5 * kRateOn.second/1E5));
     }
-
 
     TFile* fOutputFile = new TFile(fFileName + TString(".out.root"), "RECREATE");
     gTempOn->Write();
     gTempOff->Write();
     gTempDif->Write();
+    gTStampOn->Write();
+    gTStampOff->Write();
+    gTStampDif->Write();
 
     fOutputFile->Close();
     fInputFile->Close();

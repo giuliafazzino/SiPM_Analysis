@@ -79,10 +79,8 @@ biasAnalysis ( TString fFileNamea = "", TString fFileNameb = "",  TString fFileN
     hScan_Div980->Draw("SAME");
     hScan_Div1000->SetLineColor(kGreen);
     hScan_Div1000->Draw("same");
-
     cDrawCompare->SaveAs("cDrawCompare.root");
     delete cDrawCompare;
-    //
 
     TH1F*   hNorm980 = (TH1F*)hScan_Dif960->Clone("hNorm980");
     hNorm980->Divide(hScan_Dif980, hScan_Dif960);
