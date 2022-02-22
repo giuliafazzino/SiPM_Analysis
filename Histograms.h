@@ -17,12 +17,12 @@ void fillHist
 
         auto kCurrent_Bin = h_Off->GetXaxis()->FindBin(kCurrentPos);
 
-        h_Off->SetBinContent(kCurrent_Bin, kRateOff.first);
-        h_Off->SetBinError(kCurrent_Bin, kRateOff.second);
-        h_On->SetBinContent(kCurrent_Bin, kRateOn.first);
-        h_On->SetBinError(kCurrent_Bin, kRateOn.second);
-        h_Dif->SetBinContent(kCurrent_Bin, kRateOn.first - kRateOff.first);
-        h_Dif->SetBinError(kCurrent_Bin, sqrt(kRateOff.second * kRateOff.second + kRateOn.second * kRateOn.second));
+        h_Off->SetBinContent(kCurrent_Bin, kRateOff.first/100000);
+        h_Off->SetBinError(kCurrent_Bin, kRateOff.second/100000);
+        h_On->SetBinContent(kCurrent_Bin, kRateOn.first/100000);
+        h_On->SetBinError(kCurrent_Bin, kRateOn.second/100000);
+        h_Dif->SetBinContent(kCurrent_Bin, kRateOn.first/100000 - kRateOff.first/100000);
+        h_Dif->SetBinError(kCurrent_Bin, sqrt(kRateOff.second/100000* kRateOff.second/100000 + kRateOn.second/100000 * kRateOn.second/100000));
     }
 }
 

@@ -1,7 +1,7 @@
 #include "AnalysisUtility.h"
 #include "Histograms.h"
 
-void readTree_Vol(TString fFileName = ""){
+void readTreeBias(TString fFileName = ""){
 
     if (fFileName == "") {
         cout <<"NO FILENAME" <<endl;
@@ -11,7 +11,7 @@ void readTree_Vol(TString fFileName = ""){
     TTree* tInputData = (TTree*)(fInputFile->Get("tree"));
 
     Float_t voltage, counts_on, counts_off, period_on, period_off, rate_on, rate_off;
-    tInputData->SetBranchAddress("pulse_voltage", &voltage);
+    tInputData->SetBranchAddress("bias_voltage", &voltage);
     tInputData->SetBranchAddress("counts_on", &counts_on);
     tInputData->SetBranchAddress("counts_off", &counts_off);
     tInputData->SetBranchAddress("period_on", &period_on);
@@ -19,17 +19,17 @@ void readTree_Vol(TString fFileName = ""){
     tInputData->SetBranchAddress("rate_on", &rate_on);
     tInputData->SetBranchAddress("rate_off", &rate_off);
 
-    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 15, 937.5, 1012.5);
-    hScan_On->GetXaxis()->SetTitle("Voltage (mV)");
-    hScan_On->GetYaxis()->SetTitle("Rate (Hz)");
+    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 51, 47.2, 57.4);
+    hScan_On->GetXaxis()->SetTitle("Bias Voltage (V)");
+    hScan_On->GetYaxis()->SetTitle("Rate on / 100 kHz");
 
-    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 15, 937.5, 1012.5);
-    hScan_Off->GetXaxis()->SetTitle("Voltage (mV)");
-    hScan_Off->GetYaxis()->SetTitle("Rate (Hz)");
+    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 51, 47.2, 57.4);
+    hScan_Off->GetXaxis()->SetTitle("Bias Voltage (V)");
+    hScan_Off->GetYaxis()->SetTitle("Rate off / 100 kHz");
 
-    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 15, 937.5, 1012.5);
-    hScan_Dif->GetXaxis()->SetTitle("Voltage (mV)");
-    hScan_Dif->GetYaxis()->SetTitle("Rate (Hz)");
+    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 51, 47.2, 57.4);
+    hScan_Dif->GetXaxis()->SetTitle("Bias Voltage (V)");
+    hScan_Dif->GetYaxis()->SetTitle("Rate on-off / 100 kHz");
 
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_on;
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_off;
