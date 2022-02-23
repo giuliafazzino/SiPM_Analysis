@@ -25,19 +25,32 @@ void stability(TString fFileName = ""){
    TGraphErrors *gTempOn = new TGraphErrors();
    gTempOn->GetXaxis()->SetTitle("Temperature oC");
    gTempOn->GetYaxis()->SetTitle("Rate on / 100kHz");
+
    TGraphErrors *gTempOff = new TGraphErrors();
    gTempOff->GetXaxis()->SetTitle("Temperature oC");
    gTempOff->GetYaxis()->SetTitle("Rate off / 100kHz");
+
    TGraphErrors *gTempDif = new TGraphErrors();
    gTempDif->GetXaxis()->SetTitle("Temperature oC");
    gTempDif->GetYaxis()->SetTitle("Rate on - off / 100kHz");
 
+   TGraphErrors *gTempRatioOn = new TGraphErrors();
+   gTempRatioOn->GetXaxis()->SetTitle("Temperature oC");
+   gTempRatioOn->GetYaxis()->SetTitle("Rate on / off");
+
+   TGraphErrors *gTempRatioDif = new TGraphErrors();
+   gTempRatioDif->GetXaxis()->SetTitle("Temperature oC");
+   gTempRatioDif->GetYaxis()->SetTitle("Rate on - off / off");
+
+
     TGraphErrors *gTStampOn = new TGraphErrors();
     gTStampOn->GetXaxis()->SetTitle("Timestamp");
     gTStampOn->GetYaxis()->SetTitle("Rate on / 100kHz");
+
     TGraphErrors *gTStampOff = new TGraphErrors();
     gTStampOff->GetXaxis()->SetTitle("Timestamp");
     gTStampOff->GetYaxis()->SetTitle("Rate off / 100kHz");
+
     TGraphErrors *gTStampDif = new TGraphErrors();
     gTStampDif->GetXaxis()->SetTitle("Timestamp");
     gTStampDif->GetYaxis()->SetTitle("Rate on - off / 100kHz");
@@ -68,12 +81,18 @@ void stability(TString fFileName = ""){
 
         auto npt = gTempOn->GetN();
         gTempOn->SetPoint(npt, kCurrentTemp, kRateOn.first/1E5);
-        gTempOn->SetPointError(npt, kCurrentTemp, kRateOn.second/1E5);
+        gTempOn->SetPointError(npt, 0, kRateOn.second/1E5);
         gTempOff->SetPoint(npt, kCurrentTemp, kRateOff.first/1E5);
-        gTempOff->SetPointError(npt, kCurrentTemp, kRateOff.second/1E5);
+        gTempOff->SetPointError(npt, 0, kRateOff.second/1E5);
         gTempDif->SetPoint(npt, kCurrentTemp, kRateOn.first/1E5 - kRateOff.first/1E5);
-        gTempDif->SetPointError(npt, kCurrentTemp,sqrt(kRateOff.second/1E5 * kRateOff.second/1E5 +
+        gTempDif->SetPointError(npt, 0,sqrt(kRateOff.second/1E5 * kRateOff.second/1E5 +
                                 kRateOn.second/1E5 * kRateOn.second/1E5));
+        gTempRatioOn->SetPoint(npt, kCurrentTemp, kRateOn.first/kRateOff.first);
+        gTempRatioOn->SetPointError(npt, 0, sqrt(pow(kRateOn.second/kRateOff.first,2)
+                                   + pow(kRateOff.second*kRateOn.first/(kRateOff.first*kRateOff.first),2)));
+        gTempRatioDif->SetPoint(npt, kCurrentTemp, (kRateOn.first-kRateOff.first)/kRateOff.first);
+        gTempRatioDif->SetPointError(npt, 0, sqrt(pow(kRateOn.second/kRateOff.first,2)
+                                + pow(kRateOff.second*kRateOn.first/(kRateOff.first*kRateOff.first),2)));
     }
 
     std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> tsmap_on;
@@ -102,11 +121,11 @@ void stability(TString fFileName = ""){
 
         auto npt = gTStampOn->GetN();
         gTStampOn->SetPoint(npt, kCurrentTime, kRateOn.first/1E5);
-        gTStampOn->SetPointError(npt, kCurrentTime, kRateOn.second/1E5);
+        gTStampOn->SetPointError(npt, 0, kRateOn.second/1E5);
         gTStampOff->SetPoint(npt, kCurrentTime, kRateOff.first/1E5);
-        gTStampOff->SetPointError(npt, kCurrentTime, kRateOff.second/1E5);
+        gTStampOff->SetPointError(npt, 0, kRateOff.second/1E5);
         gTStampDif->SetPoint(npt, kCurrentTime, kRateOn.first/1E5 - kRateOff.first/1E5);
-        gTStampDif->SetPointError(npt, kCurrentTime,sqrt(kRateOff.second/1E5 * kRateOff.second/1E5 +
+        gTStampDif->SetPointError(npt, 0,sqrt(kRateOff.second/1E5 * kRateOff.second/1E5 +
                                                        kRateOn.second/1E5 * kRateOn.second/1E5));
     }
 
@@ -114,6 +133,9 @@ void stability(TString fFileName = ""){
     gTempOn->Write();
     gTempOff->Write();
     gTempDif->Write();
+    gTempRatioOn->Write();
+    gTempRatioDif->Write();
+
     gTStampOn->Write();
     gTStampOff->Write();
     gTStampDif->Write();

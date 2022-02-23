@@ -26,17 +26,17 @@ biasAnalysis ( TString fFileNamea = "", TString fFileNameb = "",  TString fFileN
     TH1F*   hScan_Div960 = (TH1F*)hScan_Dif960->Clone("hScan_Div960");
     hScan_Div960->Divide(hScan_Dif960, hScan_Off960);
     hScan_Div960->GetXaxis()->SetTitle("Bias Voltage (mV)");
-    hScan_Div960->GetYaxis()->SetTitle("Rate (on-off)/off (Hz)");
+    hScan_Div960->GetYaxis()->SetTitle("Rate (on-off)/off ");
 
     TH1F*   hScan_Div980 = (TH1F*)hScan_Dif980->Clone("hScan_Div980");
     hScan_Div980->Divide(hScan_Dif980, hScan_Off980);
     hScan_Div980->GetXaxis()->SetTitle("Bias Voltage (mV)");
-    hScan_Div980->GetYaxis()->SetTitle("Rate (on-off)/off (Hz)");
+    hScan_Div980->GetYaxis()->SetTitle("Rate (on-off)/off");
 
     TH1F*   hScan_Div1000 = (TH1F*)hScan_Dif1000->Clone("hScan_Div1000");
     hScan_Div1000->Divide(hScan_Dif1000, hScan_Off1000);
     hScan_Div1000->GetXaxis()->SetTitle("Bias Voltage (mV)");
-    hScan_Div1000->GetYaxis()->SetTitle("Rate (on-off)/off (Hz)");
+    hScan_Div1000->GetYaxis()->SetTitle("Rate (on-off)/off");
 
     //
     gROOT->SetBatch();
