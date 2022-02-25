@@ -33,8 +33,11 @@
 
 # Other
 .idea
+.20220224
 *.DS_Store
 *.pdf
 *.png
 *.root
 *.xlsx
+*.ps
+*.sh~
