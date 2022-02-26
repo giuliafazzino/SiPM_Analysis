@@ -10,7 +10,8 @@ void readTree_Vol(TString fFileName = ""){
     TFile* fInputFile = new TFile(fFileName);
     TTree* tInputData = (TTree*)(fInputFile->Get("tree"));
 
-    Float_t voltage, counts_on, counts_off, period_on, period_off, rate_on, rate_off;
+    Float_t voltage, period_on, period_off, rate_on, rate_off;
+    Int_t counts_on, counts_off;
     tInputData->SetBranchAddress("pulse_voltage", &voltage);
     tInputData->SetBranchAddress("counts_on", &counts_on);
     tInputData->SetBranchAddress("counts_off", &counts_off);

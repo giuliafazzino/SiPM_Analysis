@@ -1,7 +1,7 @@
 #include "AnalysisUtility.h"
 #include "Histograms.h"
 
-void readTreeBias(TString fFileName = ""){
+void readTreeBias(Int_t pvol, TString fFileName = ""){
 
     if (fFileName == "") {
         cout <<"NO FILENAME" <<endl;
@@ -10,8 +10,11 @@ void readTreeBias(TString fFileName = ""){
     TFile* fInputFile = new TFile(fFileName);
     TTree* tInputData = (TTree*)(fInputFile->Get("tree"));
 
-    Float_t voltage, counts_on, counts_off, period_on, period_off, rate_on, rate_off;
+
+    Float_t voltage, period_on, period_off, rate_on, rate_off;
+    Int_t p_vol, counts_on, counts_off, threshold;
     tInputData->SetBranchAddress("bias_voltage", &voltage);
+    tInputData->SetBranchAddress("pulse_voltage", &p_vol);
     tInputData->SetBranchAddress("counts_on", &counts_on);
     tInputData->SetBranchAddress("counts_off", &counts_off);
     tInputData->SetBranchAddress("period_on", &period_on);
@@ -19,15 +22,16 @@ void readTreeBias(TString fFileName = ""){
     tInputData->SetBranchAddress("rate_on", &rate_on);
     tInputData->SetBranchAddress("rate_off", &rate_off);
 
-    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 51, 47.2, 57.4);
+    //correggi range
+    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 16, 48.3, 56.3);
     hScan_On->GetXaxis()->SetTitle("Bias Voltage (V)");
     hScan_On->GetYaxis()->SetTitle("Rate on / 100 kHz");
 
-    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 51, 47.2, 57.4);
+    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 16, 48.3, 56.3);
     hScan_Off->GetXaxis()->SetTitle("Bias Voltage (V)");
     hScan_Off->GetYaxis()->SetTitle("Rate off / 100 kHz");
 
-    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 51, 47.2, 57.4);
+    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 16, 48.3, 56.3);
     hScan_Dif->GetXaxis()->SetTitle("Bias Voltage (V)");
     hScan_Dif->GetYaxis()->SetTitle("Rate on-off / 100 kHz");
 
@@ -38,17 +42,19 @@ void readTreeBias(TString fFileName = ""){
 
     for(int j=0; j!=tInputData->GetEntries(); ++j) {
         tInputData->GetEvent(j);
-        if (current_voltage != voltage) {
-            current_voltage = voltage;
-            voltages.push_back(current_voltage);
+        if(p_vol==pvol) {
+            if (current_voltage != voltage) {
+                current_voltage = voltage;
+                voltages.push_back(current_voltage);
+            }
+            map_on[current_voltage].push_back({(float) counts_on, period_on});
+            map_off[current_voltage].push_back({(float) counts_off, period_off});
         }
-        map_on[current_voltage].push_back({counts_on, period_on});
-        map_off[current_voltage].push_back({counts_off, period_off});
 
     }
     fillHist(hScan_On, hScan_Off, hScan_Dif, map_on, map_off, voltages);
 
-    TFile*  fOutputFile  =   new TFile( fFileName + TString(".out.root"), "RECREATE" );
+    TFile*  fOutputFile  =   new TFile( fFileName + "_pvol_" +pvol+ TString(".out.root"), "RECREATE" );
     hScan_On->Write();
     hScan_Off->Write();
     hScan_Dif->Write();
