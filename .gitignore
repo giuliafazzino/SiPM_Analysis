@@ -41,3 +41,7 @@
 *.xlsx
 *.ps
 *.sh~
+*.dat
+*.tree
+*.log
+*.sh
