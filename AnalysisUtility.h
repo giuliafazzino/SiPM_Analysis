@@ -24,12 +24,13 @@ Float_t
 calculaterms(std::vector<std::pair<Float_t,Float_t>> fInputCountsPeriods, Float_t mean = -999) {
     Float_t rate= mean == -999 ? calculatemean(fInputCountsPeriods).first : mean;
     Float_t rms=0.;
-
+    Int_t nSkips = 0;
     for (auto kCurrentPair : fInputCountsPeriods) {
+        if ( kCurrentPair.second == 0 ) { nSkips++; continue; }
         rms+=pow(((kCurrentPair.first/kCurrentPair.second)-rate),2);
     }
+    rms /=((float)fInputCountsPeriods.size()-nSkips);
     rms = sqrt(rms);
-    rms /=((float)fInputCountsPeriods.size());
     return rms;
 }
 
@@ -42,7 +43,9 @@ uCalculateRate
     Float_t rms = calculaterms(fInputCountsPeriods, rate);
 
     for(auto it=fInputCountsPeriods.begin(); it!=fInputCountsPeriods.end(); ){
-        if(TMath::Abs((((*it).first)/((*it).second)-rate))>3*rms){
+        if ( (*it).second == 0 ) {
+            it = fInputCountsPeriods.erase(it);
+        } else if(TMath::Abs((((*it).first)/((*it).second)-rate))>3*rms){
             it=fInputCountsPeriods.erase(it);
         } else {
             ++it;

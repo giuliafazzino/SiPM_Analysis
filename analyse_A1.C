@@ -1,4 +1,4 @@
-void analyse_A1(TString fFName960a = "",TString fFName980a = "",TString fFName1000a = "",
+void analyse_A1(Float_t thres, TString fFName960a = "",TString fFName980a = "",TString fFName1000a = "",
              TString fFName960b = "",TString fFName980b = "",TString fFName1000b = "",
              TString var = "") {
 
@@ -37,7 +37,7 @@ void analyse_A1(TString fFName960a = "",TString fFName980a = "",TString fFName10
     TCanvas *cA1= new TCanvas("cA1_"+var, "cA1_"+var, 800, 2400);
     cA1->Divide(1, 3);
     cA1->cd(1);
-    auto legend = new TLegend(0.70, 0.9, 0.90, 0.7);
+    auto legend = new TLegend(0.70, 0.2, 0.90, 0.4);
     legend->SetFillColorAlpha(0.0, 0.0);
     legend->SetLineColorAlpha(0.0, 0.0);
     legend->AddEntry(h960a, "1-A1, prima misura");
@@ -60,8 +60,8 @@ void analyse_A1(TString fFName960a = "",TString fFName980a = "",TString fFName10
     h1000b->Draw("SAME");
     legend->Draw("SAME");
 
-    cA1->SaveAs("cA1_" + var + ".root");
-    cA1->SaveAs("cA1_" + var + ".pdf");
+    cA1->SaveAs("cA1_" + var + "_thres_" + thres + ".root");
+    cA1->SaveAs("cA1_" + var + "_thres_" + thres + ".pdf");
     delete cA1;
 
 

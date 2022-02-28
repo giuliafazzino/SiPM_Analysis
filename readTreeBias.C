@@ -1,7 +1,7 @@
 #include "AnalysisUtility.h"
 #include "Histograms.h"
 
-void readTreeBias(Int_t pvol, TString fFileName = ""){
+void readTreeBias(Int_t i_pvol, Int_t i_thres, TString fFileName = ""){
 
     if (fFileName == "") {
         cout <<"NO FILENAME" <<endl;
@@ -12,7 +12,7 @@ void readTreeBias(Int_t pvol, TString fFileName = ""){
 
 
     Float_t voltage, period_on, period_off, rate_on, rate_off;
-    Int_t p_vol, counts_on, counts_off, threshold;
+    Int_t p_vol, counts_on, counts_off,threshold;
     tInputData->SetBranchAddress("bias_voltage", &voltage);
     tInputData->SetBranchAddress("pulse_voltage", &p_vol);
     tInputData->SetBranchAddress("counts_on", &counts_on);
@@ -21,17 +21,17 @@ void readTreeBias(Int_t pvol, TString fFileName = ""){
     tInputData->SetBranchAddress("period_off", &period_off);
     tInputData->SetBranchAddress("rate_on", &rate_on);
     tInputData->SetBranchAddress("rate_off", &rate_off);
+    tInputData->SetBranchAddress("threshold_off", &threshold);
 
-    //correggi range
-    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 16, 48.3, 56.3);
+    TH1F*   hScan_On  = new TH1F( "hScan_On", "hScan_On", 17, 48.05, 56.55);
     hScan_On->GetXaxis()->SetTitle("Bias Voltage (V)");
     hScan_On->GetYaxis()->SetTitle("Rate on / 100 kHz");
 
-    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 16, 48.3, 56.3);
+    TH1F*   hScan_Off  = new TH1F( "hScan_Off", "hScan_Off", 17, 48.05, 56.55);
     hScan_Off->GetXaxis()->SetTitle("Bias Voltage (V)");
     hScan_Off->GetYaxis()->SetTitle("Rate off / 100 kHz");
 
-    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 16, 48.3, 56.3);
+    TH1F*   hScan_Dif  = new TH1F( "hScan_Dif", "hScan_Dif", 17, 48.05, 56.55);
     hScan_Dif->GetXaxis()->SetTitle("Bias Voltage (V)");
     hScan_Dif->GetYaxis()->SetTitle("Rate on-off / 100 kHz");
 
@@ -42,7 +42,7 @@ void readTreeBias(Int_t pvol, TString fFileName = ""){
 
     for(int j=0; j!=tInputData->GetEntries(); ++j) {
         tInputData->GetEvent(j);
-        if(p_vol==pvol) {
+        if(p_vol==i_pvol && threshold==i_thres) {
             if (current_voltage != voltage) {
                 current_voltage = voltage;
                 voltages.push_back(current_voltage);
@@ -50,11 +50,11 @@ void readTreeBias(Int_t pvol, TString fFileName = ""){
             map_on[current_voltage].push_back({(float) counts_on, period_on});
             map_off[current_voltage].push_back({(float) counts_off, period_off});
         }
-
     }
+
     fillHist(hScan_On, hScan_Off, hScan_Dif, map_on, map_off, voltages);
 
-    TFile*  fOutputFile  =   new TFile( fFileName + "_pvol_" +pvol+ TString(".out.root"), "RECREATE" );
+    TFile*  fOutputFile  =   new TFile( fFileName + "_pvol_" + i_pvol + "_thres_" + i_thres + TString(".out.root"), "RECREATE" );
     hScan_On->Write();
     hScan_Off->Write();
     hScan_Dif->Write();

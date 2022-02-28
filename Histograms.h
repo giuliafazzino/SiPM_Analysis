@@ -12,8 +12,9 @@ void fillHist
  std::map<Float_t, std::vector <std::pair<Float_t, Float_t>>> map_off, std::vector<Float_t> positions)
 {
     for(auto kCurrentPos : positions) {
-        auto kRateOff = uCalculateRate(map_off[kCurrentPos]);
-        auto kRateOn = uCalculateRate(map_on[kCurrentPos]);
+
+        auto kRateOff   = uCalculateRate( map_off[kCurrentPos] );
+        auto kRateOn    = uCalculateRate( map_on[kCurrentPos]  );
 
         auto kCurrent_Bin = h_Off->GetXaxis()->FindBin(kCurrentPos);
 
