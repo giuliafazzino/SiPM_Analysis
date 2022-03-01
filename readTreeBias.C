@@ -10,7 +10,6 @@ void readTreeBias(Int_t i_pvol, Int_t i_thres, TString fFileName = ""){
     TFile* fInputFile = new TFile(fFileName);
     TTree* tInputData = (TTree*)(fInputFile->Get("tree"));
 
-
     Float_t voltage, period_on, period_off, rate_on, rate_off;
     Int_t p_vol, counts_on, counts_off,threshold;
     tInputData->SetBranchAddress("bias_voltage", &voltage);
@@ -49,6 +48,9 @@ void readTreeBias(Int_t i_pvol, Int_t i_thres, TString fFileName = ""){
             }
             map_on[current_voltage].push_back({(float) counts_on, period_on});
             map_off[current_voltage].push_back({(float) counts_off, period_off});
+        }
+        if(period_off <= 1.E-9 || period_on <= 1.E-9){
+            cout <<"ZERO!" <<endl;
         }
     }
 
