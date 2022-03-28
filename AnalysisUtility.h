@@ -54,5 +54,14 @@ uCalculateRate
     return calculatemean(fInputCountsPeriods);
 }
 
+TGraph* invert(TGraph* gTarget){
+    auto gResult = (TGraph*)(gTarget->Clone());
+    for (int i = 0; i != gTarget->GetN(); ++i){
+        auto xVal = -1 * gTarget->GetPointX(i);
+        auto yVal = -1 * gTarget->GetPointY(i);
+        gResult->SetPoint(i, xVal, yVal);
+    }
+    return gResult;
+}
 
 #endif

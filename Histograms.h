@@ -1,7 +1,3 @@
-//
-// Created by Giulia Fazzino on 18/02/2022.
-//
-
 #ifndef HISTOGRAMS_H
 #define HISTOGRAMS_H
 
